@@ -132,8 +132,13 @@
 
     async _loadCloudUser(authUser) {
       var p = await this.sb.from("profiles").select("*").eq("id", authUser.id).maybeSingle();
-      var prof = p.data || {};
       var meta = authUser.user_metadata || {};
+      /* Profil yaratilmagan bo‘lsa (trigger ishlamagan) — o‘zimiz yaratamiz */
+      if (!p.error && !p.data) {
+        var ins = await this.sb.from("profiles").insert({ id: authUser.id, full_name: meta.full_name || "", phone: meta.phone || "" }).select("*").maybeSingle();
+        if (ins.error) console.warn("Profil yaratilmadi", ins.error); else p = ins;
+      }
+      var prof = p.data || {};
       this.user = { id: authUser.id, name: prof.full_name || meta.full_name || "Agent", phone: prof.phone || meta.phone || "", role: prof.role || "agent" };
       var pr = await this.sb.from("lesson_progress").select("*").eq("user_id", authUser.id);
       this.progress = {};

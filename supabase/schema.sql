@@ -103,6 +103,12 @@ create policy "profiles_select" on public.profiles
   for select to authenticated
   using (id = auth.uid() or public.is_admin());
 
+-- profiles: trigger ishlamasa, sayt o‘z profilini yaratadi (faqat "agent" roli bilan)
+drop policy if exists "profiles_insert_self" on public.profiles;
+create policy "profiles_insert_self" on public.profiles
+  for insert to authenticated
+  with check (id = auth.uid() and role = 'agent');
+
 -- lesson_progress: o‘zinikini o‘qiydi/yozadi, rahbar hammasini o‘qiydi
 drop policy if exists "progress_select" on public.lesson_progress;
 create policy "progress_select" on public.lesson_progress
