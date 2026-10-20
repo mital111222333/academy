@@ -246,8 +246,8 @@ p { margin: 0 0 .9em; }
 
 /* ---------- Sahifa bo‘limlari ---------- */
 main { min-height: calc(100vh - var(--top-h)); outline: none; }
-.page { padding: 28px 0 64px; animation: rise .35s ease both; }
-@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.page { padding: 28px 0 64px; animation: rise .16s ease-out both; }
+@keyframes rise { from { opacity: .4; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .page { animation: none !important; } html { scroll-behavior: auto; } }
 .section { padding: 56px 0; }
 .section--tight { padding: 32px 0; }

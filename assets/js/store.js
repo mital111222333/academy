@@ -37,18 +37,27 @@
     sb: null,
     ready: false,
 
+    cached: false,       // ma'lumotlar telefon keshidan olinganmi
+
+    /* Tez start: tarmoqni kutmasdan keshdan ishga tushadi.
+       Keyin refresh() yangi ma'lumotlarni parallel yuklaydi. */
     async init() {
       var hasCloud = CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY && window.supabase && window.supabase.createClient;
+      this._snapshotDefaults();
       if (hasCloud) {
         this.mode = "cloud";
         this.sb = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY, {
           auth: { persistSession: true, autoRefreshToken: true }
         });
-        try {
-          var s = await this.sb.auth.getSession();
-          if (s.data && s.data.session) await this._loadCloudUser(s.data.session.user);
-        } catch (e) { console.warn("Supabase sessiya xatosi", e); }
-        await this._loadVideos();
+        var snap = LS.get(SNAP_KEY, null);
+        if (snap && snap.url === CFG.SUPABASE_URL && snap.v === SNAP_VER) {
+          this.user = snap.user || null;
+          this.progress = snap.progress || {};
+          this.exams = snap.exams || [];
+          this.videos = snap.videos || {};
+          this._applyRows(snap.rows || []);
+          this.cached = true;
+        }
       } else {
         this.mode = "local";
         var sid = LS.get("mital.session", null);
@@ -56,9 +65,36 @@
         var u = users.find(function (x) { return x.id === sid; });
         if (u) this._setLocalUser(u);
         this.videos = LS.get("mital.videos", {});
+        try { await this.loadContent(); } catch (e) { console.warn("Kontent xatosi", e); }
       }
-      try { await this.loadContent(); } catch (e) { console.warn("Kontent xatosi", e); }
       this.ready = true;
+    },
+
+    /* Bulutdan yangi ma'lumot: hammasi BIR VAQTDA (parallel) so'raladi.
+       Qaytaradi: ma'lumot o'zgardimi (sahifani qayta chizish kerakmi) */
+    async refresh() {
+      if (this.mode !== "cloud") return false;
+      var before = this._fingerprint();
+      var session = null;
+      try { var s = await this.sb.auth.getSession(); session = s.data && s.data.session; }
+      catch (e) { console.warn("Supabase sessiya xatosi", e); }
+      var jobs = [this._fetchContent(), this._loadVideos()];
+      if (session) jobs.push(this._loadCloudUser(session.user));
+      else { this.user = null; this.progress = {}; this.exams = []; }
+      var res = await Promise.allSettled(jobs);
+      res.forEach(function (r) { if (r.status === "rejected") console.warn("Yuklash xatosi", r.reason); });
+      this._saveSnap();
+      return before !== this._fingerprint();
+    },
+
+    _fingerprint() {
+      try { return JSON.stringify([this.user, this.progress, this.exams, this.videos, this.contentMeta]); } catch (e) { return String(Math.random()); }
+    },
+    _saveSnap() {
+      if (this.mode !== "cloud") return;
+      var self = this;
+      var rows = CONTENT_KEYS.filter(function (k) { return self.contentMeta[k]; }).map(function (k) { return { key: k, data: clone(getGlobal(k)), updated_at: self.contentMeta[k].updated_at }; });
+      LS.set(SNAP_KEY, { v: SNAP_VER, url: CFG.SUPABASE_URL, at: nowIso(), user: this.user, progress: this.progress, exams: this.exams, videos: this.videos, rows: rows });
     },
 
     /* ---------------- AUTH ---------------- */
@@ -111,6 +147,7 @@
       if (this.mode === "cloud" && this.sb) await this.sb.auth.signOut();
       LS.del("mital.session");
       this.user = null; this.progress = {}; this.exams = [];
+      this._saveSnap();
     },
 
     _authErr(e) {
@@ -131,28 +168,36 @@
     },
 
     async _loadCloudUser(authUser) {
-      var p = await this.sb.from("profiles").select("*").eq("id", authUser.id).maybeSingle();
+      var uid0 = authUser.id;
+      var all = await Promise.all([
+        this.sb.from("profiles").select("*").eq("id", uid0).maybeSingle(),
+        this.sb.from("lesson_progress").select("*").eq("user_id", uid0),
+        this.sb.from("exam_attempts").select("*").eq("user_id", uid0).order("created_at", { ascending: true })
+      ]);
+      var p = all[0], pr = all[1], ex = all[2];
       var meta = authUser.user_metadata || {};
-      /* Profil yaratilmagan bo‘lsa (trigger ishlamagan) — o‘zimiz yaratamiz */
+      /* Profil yaratilmagan bo'lsa (trigger ishlamagan) - o'zimiz yaratamiz */
       if (!p.error && !p.data) {
-        var ins = await this.sb.from("profiles").insert({ id: authUser.id, full_name: meta.full_name || "", phone: meta.phone || "" }).select("*").maybeSingle();
+        var ins = await this.sb.from("profiles").insert({ id: uid0, full_name: meta.full_name || "", phone: meta.phone || "" }).select("*").maybeSingle();
         if (ins.error) console.warn("Profil yaratilmadi", ins.error); else p = ins;
       }
       var prof = p.data || {};
-      this.user = { id: authUser.id, name: prof.full_name || meta.full_name || "Agent", phone: prof.phone || meta.phone || "", role: prof.role || "agent" };
-      var pr = await this.sb.from("lesson_progress").select("*").eq("user_id", authUser.id);
-      this.progress = {};
-      (pr.data || []).forEach(function (r) { Store.progress[r.lesson_id] = r; });
-      var ex = await this.sb.from("exam_attempts").select("*").eq("user_id", authUser.id).order("created_at", { ascending: true });
-      this.exams = ex.data || [];
+      this.user = { id: uid0, name: prof.full_name || meta.full_name || "Agent", phone: prof.phone || meta.phone || "", role: prof.role || "agent" };
+      var prog = {};
+      (pr.data || []).forEach(function (r) { prog[r.lesson_id] = r; });
+      if (!pr.error) this.progress = prog;
+      if (!ex.error) this.exams = ex.data || [];
+      this._saveSnap();
       this.sb.rpc("touch_last_seen").then(function () {}, function () {});
     },
 
     async _loadVideos() {
       if (this.mode !== "cloud") return;
-      var r = await this.sb.from("lesson_videos").select("*");
-      this.videos = {};
-      (r.data || []).forEach(function (v) { if (v.url) Store.videos[v.lesson_id] = v.url; });
+      var r = await this.sb.from("lesson_videos").select("lesson_id,url");
+      if (r.error) return;
+      var v = {};
+      (r.data || []).forEach(function (x) { if (x.url) v[x.lesson_id] = x.url; });
+      this.videos = v;
     },
 
     /* ---------------- PROGRESS ---------------- */
@@ -175,6 +220,7 @@
       } else {
         LS.set("mital.progress." + this.user.id, this.progress);
       }
+      this._saveSnap();
       return row;
     },
 
@@ -196,6 +242,7 @@
       if (this.mode === "cloud") {
         var r = await this.sb.from("exam_attempts").insert(Object.assign({ user_id: this.user.id }, att));
         if (r.error) throw r.error;
+        this._saveSnap();
       } else {
         LS.set("mital.exams." + this.user.id, this.exams);
       }
@@ -218,10 +265,13 @@
     /* ---------------- RAHBAR ---------------- */
     async listAgents() {
       if (this.mode === "cloud") {
-        var p = await this.sb.from("profiles").select("*").order("created_at", { ascending: true });
+        var all = await Promise.all([
+          this.sb.from("profiles").select("*").order("created_at", { ascending: true }),
+          this.sb.from("lesson_progress").select("*"),
+          this.sb.from("exam_attempts").select("*").order("created_at", { ascending: true })
+        ]);
+        var p = all[0], lp = all[1], ex = all[2];
         if (p.error) throw p.error;
-        var lp = await this.sb.from("lesson_progress").select("*");
-        var ex = await this.sb.from("exam_attempts").select("*").order("created_at", { ascending: true });
         return (p.data || []).map(function (u) {
           var prog = {};
           (lp.data || []).filter(function (r) { return r.user_id === u.id; }).forEach(function (r) { prog[r.lesson_id] = r; });
@@ -253,26 +303,40 @@
 
     _snapshotDefaults() {
       var self = this;
+      if (this._defaultsTaken) return; this._defaultsTaken = true;
       CONTENT_KEYS.forEach(function (k) { self.defaults[k] = clone(getGlobal(k)); });
     },
 
     async loadContent() {
-      this._snapshotDefaults();
-      var self = this, rows = [];
-      if (this.mode === "cloud") {
-        var r = await this.sb.from("site_content").select("key,data,updated_at");
-        if (r.error) console.warn("Kontent yuklanmadi", r.error);
-        rows = r.data || [];
-      } else {
-        CONTENT_KEYS.forEach(function (k) {
-          var d = LS.get("mital.content." + k, null);
-          if (d) rows.push({ key: k, data: d.data, updated_at: d.updated_at });
-        });
-      }
-      rows.forEach(function (row) {
-        if (CONTENT_KEYS.indexOf(row.key) < 0 || !row.data) return;
-        setGlobal(row.key, row.data);
-        self.contentMeta[row.key] = { updated_at: row.updated_at };
+      var rows = [];
+      if (this.mode === "cloud") { await this._fetchContent(); return; }
+      CONTENT_KEYS.forEach(function (k) {
+        var d = LS.get("mital.content." + k, null);
+        if (d) rows.push({ key: k, data: d.data, updated_at: d.updated_at });
+      });
+      this._applyRows(rows);
+    },
+
+    async _fetchContent() {
+      var r = await this.sb.from("site_content").select("key,data,updated_at");
+      if (r.error) { console.warn("Kontent yuklanmadi", r.error); return; }
+      this._applyRows(r.data || []);
+    },
+
+    /* Bazadagi bo'limlarni qo'llaydi; bazada yo'q bo'lsa - fayldagi asl holat */
+    _applyRows(rows) {
+      var self = this, byKey = {};
+      rows.forEach(function (row) { if (CONTENT_KEYS.indexOf(row.key) >= 0 && row.data) byKey[row.key] = row; });
+      CONTENT_KEYS.forEach(function (k) {
+        var row = byKey[k];
+        if (row) {
+          var m = self.contentMeta[k];
+          if (!m || m.updated_at !== row.updated_at) setGlobal(k, row.data);
+          self.contentMeta[k] = { updated_at: row.updated_at };
+        } else if (self.contentMeta[k]) {
+          setGlobal(k, clone(self.defaults[k]));
+          delete self.contentMeta[k];
+        }
       });
     },
 
@@ -291,6 +355,7 @@
       }
       setGlobal(key, plain);
       this.contentMeta[key] = { updated_at: at };
+      this._saveSnap();
     },
 
     async history(key) {
@@ -347,6 +412,7 @@
   };
 
   /* ---------- kontent yordamchilari ---------- */
+  var SNAP_KEY = "mital.snap", SNAP_VER = 1;
   var CONTENT_KEYS = ["course", "catalog", "scripts", "trainer", "exam", "company", "home", "settings"];
   var GLOBALS = { course: "COURSE", catalog: "CATALOG", scripts: "SCRIPTS", trainer: "TRAINER", exam: "EXAM", company: "COMPANY", home: "HOME" };
   function settingsOf(cfg) {

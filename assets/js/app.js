@@ -867,6 +867,23 @@
     reindex: reindex, route: route, toast: toast, modal: modal, esc: esc, go: go, imgSrc: imgSrc, ytId: ytId,
     lessons: function () { return LESSONS; }, lesson: function (id) { return LBYID[id]; }, module: function (id) { return MBYID[id]; }
   };
-  function start() { reindex(); route(); }
-  Store.init().then(start, function (e) { console.error(e); start(); });
+  /* Tez start: keshdan darhol chizamiz, yangi ma'lumotni fonda olamiz */
+  function safeToRerender() {
+    return !leaveGuard && !document.querySelector(".sheet") && !document.querySelector("#modal.open") &&
+      !document.querySelector(".opt.sel, .opt.ok, .opt.no") && !(document.activeElement && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName));
+  }
+  async function boot() {
+    try { await Store.init(); } catch (e) { console.error(e); }
+    if (Store.mode === "cloud" && !Store.cached) {
+      $app.innerHTML = '<div class="page"><div class="wrap"><div class="empty">Yuklanmoqda…</div></div></div>';
+      try { await Store.refresh(); } catch (e) { console.error(e); }
+    }
+    reindex(); route();
+    if (Store.mode === "cloud" && Store.cached) {
+      Store.refresh().then(function (changed) {
+        if (changed && safeToRerender()) { reindex(); route(true); }
+      }, function (e) { console.error(e); });
+    }
+  }
+  boot();
 })();
