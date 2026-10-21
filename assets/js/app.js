@@ -105,7 +105,7 @@
       '<rect x="4" y="94" width="192" height="12" fill="var(--gold)"/>' +
       '<text font-family="JetBrains Mono, monospace" font-weight="700" font-size="15" letter-spacing="2.5" fill="' + txt + '"><textPath href="#' + id + 't" startOffset="50%" text-anchor="middle">MITAL · AKADEMIYA</textPath></text>' +
       '<text font-family="JetBrains Mono, monospace" font-weight="700" font-size="13" letter-spacing="2" fill="' + txt + '"><textPath href="#' + id + 'b" startOffset="50%" text-anchor="middle" dominant-baseline="hanging">' + esc(sub || "API AGENT") + '</textPath></text>' +
-      '<text x="100" y="115" text-anchor="middle" font-family="Unbounded, sans-serif" font-weight="800" font-size="40" fill="#1A1300">' + esc(code) + '</text>' +
+      '<text x="100" y="115" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="40" fill="#1A1300">' + esc(code) + '</text>' +
       '</svg>';
   }
   function dip(pct) {
@@ -252,7 +252,7 @@
       '<rect x="32" y="190" width="336" height="20" fill="var(--gold)"/>' +
       '<text font-family="JetBrains Mono, monospace" font-weight="700" font-size="20" letter-spacing="4" fill="#F3F1EC"><textPath href="#hrT" startOffset="50%" text-anchor="middle">MITAL · AKADEMIYA</textPath></text>' +
       '<text font-family="JetBrains Mono, monospace" font-weight="700" font-size="17" letter-spacing="3" fill="#F3F1EC"><textPath href="#hrB" startOffset="50%" text-anchor="middle" dominant-baseline="hanging">SERTIFIKATLANGAN AGENT</textPath></text>' +
-      '<text x="200" y="228" text-anchor="middle" font-family="Unbounded, sans-serif" font-weight="800" font-size="78" fill="#1A1300">SQ</text>' +
+      '<text x="200" y="228" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="78" fill="#1A1300">SQ</text>' +
       '<g font-family="JetBrains Mono, monospace" font-size="12" font-weight="700" fill="var(--ink-3)"><text x="8" y="28">SAE 5W-30</text><text x="300" y="28">API SQ</text><text x="8" y="390">ACEA A3/B4</text><text x="296" y="390">dexos1 G3</text></g>' +
       '</svg>';
   }
@@ -694,18 +694,18 @@
     x.fillText("MITAL · AKADEMIYA", 110, 150);
     x.textAlign = "right"; x.fillText("№ " + certId(user, ex), W - 110, 150);
     x.textAlign = "left";
-    x.font = "800 96px Unbounded, sans-serif"; x.fillText("SERTIFIKAT", 106, 300);
-    x.font = "500 30px 'Golos Text', sans-serif"; x.fillStyle = "#48526E"; x.fillText("Ushbu sertifikat shuni tasdiqlaydiki", 110, 400);
-    x.fillStyle = "#0E1730"; var nsz = 62; x.font = "800 " + nsz + "px Unbounded, sans-serif"; while (x.measureText(String(user.name).toUpperCase()).width > 880 && nsz > 30) { nsz -= 2; x.font = "800 " + nsz + "px Unbounded, sans-serif"; }
+    x.font = "700 96px 'Space Grotesk', sans-serif"; x.fillText("SERTIFIKAT", 106, 300);
+    x.font = "500 30px 'Space Grotesk', sans-serif"; x.fillStyle = "#48526E"; x.fillText("Ushbu sertifikat shuni tasdiqlaydiki", 110, 400);
+    x.fillStyle = "#0E1730"; var nsz = 62; x.font = "700 " + nsz + "px 'Space Grotesk', sans-serif"; while (x.measureText(String(user.name).toUpperCase()).width > 880 && nsz > 30) { nsz -= 2; x.font = "700 " + nsz + "px 'Space Grotesk', sans-serif"; }
     x.fillText(String(user.name).toUpperCase(), 104, 505);
     x.fillStyle = "#F2B705"; x.fillRect(110, 528, 760, 8);
-    x.fillStyle = "#48526E"; x.font = "500 30px 'Golos Text', sans-serif";
+    x.fillStyle = "#48526E"; x.font = "500 30px 'Space Grotesk', sans-serif";
     wrap(x, "MITAL Akademiyaning 21 kunlik «MITAL Online Sales Academy» kursini to‘liq o‘tdi va yakuniy imtihonni muvaffaqiyatli topshirdi. Endi u — sertifikatlangan MITAL agenti.", 110, 600, 900, 44);
     var y = 820;
     [["NATIJA", ex.percent + "%"], ["SANA", fmtDate(ex.created_at)], ["DARAJA", "API SQ"]].forEach(function (k, i) {
       var bx = 110 + i * 330;
       x.fillStyle = "#7C849A"; x.font = "700 20px 'JetBrains Mono', monospace"; x.fillText(k[0], bx, y);
-      x.fillStyle = "#0E1730"; x.font = "800 40px Unbounded, sans-serif"; x.fillText(k[1], bx, y + 58);
+      x.fillStyle = "#0E1730"; x.font = "700 40px 'Space Grotesk', sans-serif"; x.fillText(k[1], bx, y + 58);
     });
     x.strokeStyle = "#0E1730"; x.lineWidth = 2; x.beginPath(); x.moveTo(110, 1000); x.lineTo(560, 1000); x.stroke();
     x.fillStyle = "#7C849A"; x.font = "600 20px 'JetBrains Mono', monospace"; x.fillText("RAHBAR IMZOSI", 110, 1030);
@@ -714,7 +714,7 @@
     x.fillStyle = "#0E1730"; x.beginPath(); x.arc(cx, cy, R, 0, Math.PI * 2); x.fill();
     x.fillStyle = "#F2B705"; x.beginPath(); x.arc(cx, cy, R * .6, 0, Math.PI * 2); x.fill();
     x.fillRect(cx - R - 6, cy - 16, R * 2 + 12, 32);
-    x.fillStyle = "#1A1300"; x.textAlign = "center"; x.font = "800 108px Unbounded, sans-serif"; x.fillText("SQ", cx, cy + 40);
+    x.fillStyle = "#1A1300"; x.textAlign = "center"; x.font = "700 108px 'Space Grotesk', sans-serif"; x.fillText("SQ", cx, cy + 40);
     arcText(x, "MITAL · AKADEMIYA", cx, cy, R * .8, true);
     arcText(x, "SERTIFIKATLANGAN AGENT", cx, cy, R * .8, false);
     x.textAlign = "left";

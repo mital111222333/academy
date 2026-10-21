@@ -1,0 +1,348 @@
+/* =========================================================
+   MITAL Akademiya — NEUBRUTALISM mavzusi
+   style.css ustidan qo‘llanadi. Eski dizaynga qaytish uchun
+   index.html dan shu fayl ulanishini olib tashlang.
+   Belgilar: qalin qora chiziqlar, qattiq soyalar, kremli fon,
+   MITANOL ko‘k + oltin, jasur pastel ranglar, Space Grotesk.
+   ========================================================= */
+
+:root {
+  --paper: #FFF8E6;
+  --paper-2: #F4EBD2;
+  --surface: #FFFFFF;
+  --ink: #0A0A0A;
+  --ink-2: #2B2B2B;
+  --ink-3: #555048;
+  --line: #0A0A0A;
+  --line-2: #D9CFB3;
+  --edge: #0A0A0A;          /* qalin chiziq rangi */
+  --sh: #0A0A0A;            /* qattiq soya rangi */
+  --blue: #0B3A9E;
+  --blue-2: #1F55D1;
+  --blue-soft: #CFE0FF;
+  --gold: #F2B705;
+  --gold-2: #FFD24A;
+  --gold-ink: #6B4C00;
+  --gold-soft: #FFE99A;
+  --red: #C8102E;
+  --red-soft: #FFD6D6;
+  --green: #0E7A42;
+  --green-soft: #B8F0D0;
+  --pink: #FFD6E7;
+  --coral: #FF5C5C;
+  --bw: 3px;                /* chiziq qalinligi */
+  --shadow: 5px 5px 0 var(--sh);
+  --shadow-sm: 3px 3px 0 var(--sh);
+  --shadow-lg: 8px 8px 0 var(--sh);
+  --radius: 14px;
+  --radius-sm: 10px;
+  --f-display: "Space Grotesk", system-ui, sans-serif;
+  --f-body: "Space Grotesk", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #141414; --paper-2: #1E1E1E; --surface: #1B1B1B;
+    --ink: #F7F2E4; --ink-2: #DCD6C6; --ink-3: #A9A293;
+    --line: #F7F2E4; --line-2: #3A3832; --edge: #F7F2E4; --sh: #F2B705;
+    --blue: #8FB0FF; --blue-soft: #1B2A55; --gold-ink: #FFD45A; --gold-soft: #3A3010;
+    --red: #FF8A8A; --red-soft: #3D1C1C; --green: #5EE0A0; --green-soft: #133626; --pink: #3D2030;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #141414; --paper-2: #1E1E1E; --surface: #1B1B1B;
+  --ink: #F7F2E4; --ink-2: #DCD6C6; --ink-3: #A9A293;
+  --line: #F7F2E4; --line-2: #3A3832; --edge: #F7F2E4; --sh: #F2B705;
+  --blue: #8FB0FF; --blue-soft: #1B2A55; --gold-ink: #FFD45A; --gold-soft: #3A3010;
+  --red: #FF8A8A; --red-soft: #3D1C1C; --green: #5EE0A0; --green-soft: #133626; --pink: #3D2030;
+}
+
+body { letter-spacing: -.005em; }
+
+/* ---------- Sarlavhalar: katta harfsiz, zich ---------- */
+h1, h2, h3, .display, .prod__name, .rec__n, .tl__y, .stat b, .kpi b, .calc__out b, .hero__meta b {
+  text-transform: none !important;
+  letter-spacing: -.03em !important;
+}
+.display { font-weight: 700; line-height: 1.02; }
+.h1 { font-size: clamp(38px, 7.6vw, 84px); }
+.h2 { font-size: clamp(28px, 4.8vw, 50px); }
+.h3 { font-size: clamp(21px, 3vw, 28px); }
+.eyebrow::before { height: 3px; background: var(--edge); }
+
+/* ---------- Umumiy "brutal" bloklar ---------- */
+.card, .mod, .les, .prod, .ig, .road__wk, .quiz, .tcard, .kpi, .brandcard, .mx, .steps li,
+.tbl-wrap, .task, .keys, .modhead, .next, .rec, .lst__it, .subcard, .flow__s, .ladder__r,
+.funnel__bar, .light, .calc__out div, .cmscard, .placeholder, .video--empty, .compare > div,
+.callout, .say, .kv, .banner {
+  border: var(--bw) solid var(--edge) !important;
+  box-shadow: var(--shadow);
+  border-radius: var(--radius);
+}
+.flow__s, .ladder__r, .funnel__bar, .light, .calc__out div, .kv, .say, .callout, .compare > div, .banner, .steps li { box-shadow: var(--shadow-sm); }
+.card--flat { box-shadow: var(--shadow-sm); }
+.ig { padding: 20px; }
+.ig .ig { box-shadow: none; }
+.mx { background: var(--surface); }
+.placeholder { border-style: dashed !important; box-shadow: none; }
+
+/* bosiladigan kartalar — "ko‘tariladi" */
+a.mod, a.les, .prod, .rec, a.card, .cmscard {
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+a.mod:hover, a.les:hover, .prod:hover, .rec:hover, a.card:hover, .cmscard:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 var(--sh);
+  border-color: var(--edge);
+}
+a.mod:active, a.les:active, .prod:active, .rec:active, a.card:active, .cmscard:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--sh);
+}
+
+/* ---------- Tugmalar ---------- */
+.btn {
+  border: var(--bw) solid var(--edge) !important;
+  border-radius: 12px;
+  box-shadow: 4px 4px 0 var(--sh);
+  font-weight: 700;
+  transition: transform .1s ease, box-shadow .1s ease;
+}
+.btn:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--sh); }
+.btn:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--sh); }
+.btn[disabled] { box-shadow: none; transform: none; }
+.btn { --b: var(--ink); }
+.btn--gold { background: var(--gold); color: #0A0A0A; }
+.btn--blue { background: #0B3A9E; color: #fff; }
+.btn--ghost { background: var(--surface); color: var(--ink); }
+.btn--ghost:hover { border-color: var(--edge); }
+.iconbtn, .userchip { border: var(--bw) solid var(--edge); box-shadow: 3px 3px 0 var(--sh); }
+.iconbtn:active, .userchip:active { transform: translate(2px, 2px); box-shadow: none; }
+.avatar { border: 2px solid var(--edge); }
+.linkbtn { color: var(--ink); text-decoration-thickness: 2px; }
+a { text-decoration-thickness: 2px; }
+
+/* ---------- Teglar, chiplar ---------- */
+.spec { border: 2px solid var(--edge); color: var(--ink); background: var(--surface); border-radius: 8px; }
+.spec--gold { background: var(--gold); color: #0A0A0A; border-color: var(--edge); }
+.spec--blue { background: var(--blue-soft); color: var(--ink); border-color: var(--edge); }
+.spec--green { background: var(--green-soft); color: var(--ink); border-color: var(--edge); }
+.spec--red { background: var(--red-soft); color: var(--ink); border-color: var(--edge); }
+.chip { border: 2.5px solid var(--edge); color: var(--ink); font-weight: 700; box-shadow: 2px 2px 0 var(--sh); }
+.chip:hover { border-color: var(--edge); background: var(--gold-soft); color: var(--ink); }
+.chip.on { background: var(--ink); color: var(--gold); border-color: var(--edge); }
+.badge-new { background: var(--coral); color: #0A0A0A; border: 2px solid var(--edge); }
+.status { border: 2px solid var(--edge); color: var(--ink) !important; }
+.status--ok { background: var(--green-soft); } .status--run { background: var(--blue-soft); }
+.status--idle { background: var(--red-soft); } .status--new { background: var(--paper-2); }
+
+/* ---------- Yuqori panel va pastki menyu ---------- */
+.topbar { background: var(--gold); border-bottom: var(--bw) solid var(--edge); backdrop-filter: none; -webkit-backdrop-filter: none; }
+:root[data-theme="dark"] .topbar { background: #1B1B1B; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .topbar { background: #1B1B1B; } }
+.brand { color: #0A0A0A; }
+.brand__mark { border: var(--bw) solid var(--edge); box-shadow: 2px 2px 0 var(--sh); }
+.brand__txt b { font-weight: 700; letter-spacing: -.02em; color: var(--ink); }
+.brand__txt i { color: var(--ink-2); }
+.topnav a { color: var(--ink); font-weight: 700; border-radius: 10px; }
+.topnav a:hover { background: rgba(0,0,0,.08); color: var(--ink); }
+.topnav a.on { background: var(--ink); color: var(--gold); box-shadow: none; }
+:root[data-theme="dark"] .topnav a.on, :root[data-theme="dark"] .chip.on { background: var(--gold); color: #0A0A0A; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .topnav a.on, :root:not([data-theme="light"]) .chip.on { background: var(--gold); color: #0A0A0A; }
+}
+.tabbar { border-top: var(--bw) solid var(--edge); background: var(--surface); }
+.tabbar a { color: var(--ink-2); font-weight: 700; }
+.tabbar a.on { color: var(--ink); background: var(--gold); }
+.tabbar a.on::before { display: none; }
+.tabbar a.on svg { color: var(--ink); }
+
+/* ---------- Bosh sahifa ---------- */
+.hero.blueprint { background-image: radial-gradient(var(--line-2) 1.4px, transparent 1.6px); background-size: 22px 22px; border-bottom: var(--bw) solid var(--edge); }
+.hero__title .stroke {
+  color: #0A0A0A; -webkit-text-stroke: 0;
+  background: var(--gold); padding: 0 .12em; border-radius: 10px;
+  border: var(--bw) solid var(--edge);
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+.hero__title .gold { color: var(--blue); }
+.hero__title { line-height: 1.16 !important; }
+.hero__title .stroke { display: inline-block; margin: .06em 0; line-height: 1.05; }
+/* Kartalardagi sarlavhalar Space Grotesk uchun kattaroq */
+.section .card h3 { font-size: 20px !important; line-height: 1.2 !important; font-weight: 700 !important; }
+.road__wk h3 { font-size: 26px; font-weight: 700; }
+.mod__t { font-size: 17.5px; }
+.wk-title h3 { font-size: 24px; font-weight: 700; }
+.lesson__head h1 { font-size: clamp(30px, 5.2vw, 50px); font-weight: 700; line-height: 1.05; }
+.modhead h1 { font-size: clamp(32px, 5.6vw, 56px); font-weight: 700; line-height: 1.02; }
+.prose h2 { font-size: clamp(22px, 3.2vw, 28px); }
+.next h3 { font-size: 26px; font-weight: 700; line-height: 1.12; }
+.dash__hello h1 { font-size: clamp(32px, 5.4vw, 48px); font-weight: 700; }
+.prod__name { font-size: 19px; }
+.pmodal__b h2 { font-size: 32px; font-weight: 700; }
+.quiz__head h3, .keys h3, .task h3 { font-size: 22px; font-weight: 700; }
+.hero__meta div { background: var(--surface); border: var(--bw) solid var(--edge); border-radius: 12px; padding: 10px 14px; box-shadow: var(--shadow-sm); }
+.hero__meta div:nth-child(1) { background: var(--green-soft); }
+.hero__meta div:nth-child(2) { background: var(--pink); }
+.hero__meta div:nth-child(3) { background: var(--blue-soft); }
+.hero__meta span { color: var(--ink); }
+.section[style*="paper-2"] { border-top: var(--bw) solid var(--edge); border-bottom: var(--bw) solid var(--edge); }
+.formula .f { border: var(--bw) solid var(--edge); box-shadow: var(--shadow-sm); background: var(--surface); }
+.formula .f--res { background: var(--gold); color: #0A0A0A; }
+.formula .op { color: var(--ink); }
+.road__wk:nth-child(1) { background: var(--surface); }
+.road__wk:nth-child(2) { background: var(--gold-soft); }
+.road__wk:nth-child(3) { background: var(--blue-soft); }
+.card[style*="#0E1730"] { background: #0B3A9E !important; }
+
+/* ---------- Kabinet ---------- */
+.next { background: #0B3A9E !important; }
+.next .btn { box-shadow: 4px 4px 0 #0A0A0A; border-color: #0A0A0A !important; }
+.dash .grid.g4 .stat { border: var(--bw) solid var(--edge); border-radius: 12px; padding: 12px 14px; box-shadow: var(--shadow-sm); }
+.dash .grid.g4 .stat:nth-child(1) { background: var(--green-soft); }
+.dash .grid.g4 .stat:nth-child(2) { background: var(--pink); }
+.dash .grid.g4 .stat:nth-child(3) { background: var(--blue-soft); }
+.dash .grid.g4 .stat:nth-child(4) { background: var(--gold-soft); }
+.stat span { color: var(--ink-2); }
+.mod__n { border: var(--bw) solid var(--edge); }
+.mod.done .mod__n { background: var(--gold); }
+.mod.locked { opacity: 1; background: var(--paper-2); box-shadow: none; }
+.mod.locked .mod__n { border-style: dashed; }
+.wk-title .spec--gold { box-shadow: 2px 2px 0 var(--sh); }
+.hbar { height: 14px; border: 2.5px solid var(--edge); background: var(--surface); border-radius: 8px; }
+.hbar > i { background: var(--gold); border-right: 2.5px solid var(--edge); border-radius: 0; }
+.hbar > i[style="width:0%"] { border-right: 0; }
+.hbar--blue > i { background: var(--blue-2); }
+.mod__p .hbar { height: 12px; }
+.dip__bar { border: var(--bw) solid var(--edge); background: var(--surface); }
+.dip__fill { background: var(--gold); border-top: var(--bw) solid var(--edge); }
+
+/* ---------- Modul va dars ---------- */
+.modhead { background: #0B3A9E !important; }
+.modhead__n { color: rgba(255,255,255,.12); }
+.les.done .les__ic { background: var(--green-soft); color: #0A0A0A; border: 2.5px solid var(--edge); }
+.les.cur .les__ic { background: var(--gold); border: 2.5px solid var(--edge); }
+.les__ic { border: 2.5px solid var(--edge); }
+.les.locked { opacity: .55; box-shadow: none; }
+.side__list a.on { background: var(--gold); box-shadow: none; border: 2px solid var(--edge); }
+.prose h2 { font-weight: 700; }
+.prose h2 .sec { color: var(--ink-3); }
+.prose em { background: linear-gradient(transparent 55%, var(--gold) 55%); }
+.prose li::marker { color: var(--ink); }
+.callout { color: var(--ink); }
+.callout__t { color: var(--ink) !important; font-weight: 700; }
+.callout--tip { background: var(--blue-soft); }
+.callout--warn { background: var(--red-soft); }
+.callout--rule { background: var(--gold); color: #0A0A0A; }
+.callout--rule .callout__t { color: #0A0A0A !important; }
+.callout--ok { background: var(--green-soft); }
+.steps li::before { color: var(--ink); }
+.dialog__b { border: 2.5px solid var(--edge); box-shadow: 3px 3px 0 var(--sh); }
+.dialog__l--a .dialog__b { background: #0B3A9E; color: #fff; }
+.dialog__l--c .dialog__b { background: var(--surface); }
+.dialog__l--n .dialog__b { background: var(--gold); color: #0A0A0A; }
+.compare .bad { background: var(--pink); } .compare .good { background: var(--green-soft); }
+.compare .bad h4, .compare .good h4 { color: var(--ink); }
+.keys { background: var(--ink) !important; color: var(--paper); }
+:root[data-theme="dark"] .keys { background: #000 !important; color: #F7F2E4; }
+.task { border-style: solid !important; background: var(--gold-soft); }
+.task input { accent-color: #0A0A0A; }
+.tbl th { background: var(--gold); color: #0A0A0A; border-bottom: var(--bw) solid var(--edge); }
+.tbl td { border-bottom: 2px solid var(--line-2); }
+.media img { border: var(--bw) solid var(--edge); box-shadow: var(--shadow-sm); }
+
+/* ---------- Test ---------- */
+.quiz__head { background: var(--gold); border-bottom: var(--bw) solid var(--edge); }
+.quiz__head h3 { color: #0A0A0A; }
+.quiz__head .spec { background: var(--surface); }
+.quiz__foot { border-top: var(--bw) solid var(--edge); }
+.opt { border: var(--bw) solid var(--edge); border-radius: 12px; font-weight: 600; color: var(--ink); transition: transform .1s ease, box-shadow .1s ease; }
+.opt:hover { border-color: var(--edge); transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--sh); }
+.opt__k { border: 2px solid var(--edge); }
+.opt.sel { background: var(--blue-soft); border-color: var(--edge); box-shadow: 3px 3px 0 var(--sh); }
+.opt.sel .opt__k { background: #0B3A9E; border-color: var(--edge); color: #fff; }
+.opt.ok { background: var(--green-soft); border-color: var(--edge); box-shadow: 3px 3px 0 var(--sh); }
+.opt.ok .opt__k { background: #0E7A42; border-color: var(--edge); color: #fff; }
+.opt.no { background: var(--pink); border-color: var(--edge); }
+.opt.no .opt__k { background: var(--coral); border-color: var(--edge); color: #0A0A0A; }
+.opts.locked .opt:hover { transform: none; box-shadow: none; }
+.opt.ok:hover, .opt.sel:hover { box-shadow: 3px 3px 0 var(--sh); }
+.why { border-left: 4px solid var(--edge); color: var(--ink-2); }
+
+/* ---------- Katalog ---------- */
+.prod__img { border-bottom: var(--bw) solid var(--edge); }
+.prod__name { font-weight: 700; }
+.pmodal__img { border-right: var(--bw) solid var(--edge); }
+.say { background: var(--gold); color: #0A0A0A; }
+.say b { color: #0A0A0A; }
+.ticklist li::before { color: var(--ink); }
+.rec--top { background: var(--gold-soft); }
+.rec img { border: 2px solid var(--edge); }
+.kv > div { border-bottom: 2px solid var(--line-2); }
+
+/* ---------- Trenajor, imtihon ---------- */
+.tcard__client { background: #0B3A9E !important; border-bottom: var(--bw) solid var(--edge); }
+.exam-top { border-bottom: var(--bw) solid var(--edge); }
+.timer { border: var(--bw) solid var(--edge); box-shadow: 3px 3px 0 var(--sh); }
+.qnav button { border: 2.5px solid var(--edge); }
+.qnav button.ans { background: var(--blue-soft); color: var(--ink); border-color: var(--edge); }
+.qnav button.on { outline: 0; background: var(--gold); }
+.result-hero { border: var(--bw) solid var(--edge); box-shadow: var(--shadow); }
+.cert-wrap canvas { border: var(--bw) solid var(--edge); box-shadow: var(--shadow-lg); }
+
+/* ---------- Rahbar, kompaniya ---------- */
+.kpi:nth-child(1) { background: var(--green-soft); }
+.kpi:nth-child(2) { background: var(--blue-soft); }
+.kpi:nth-child(3) { background: var(--gold-soft); }
+.kpi:nth-child(4) { background: var(--pink); }
+.kpi span { color: var(--ink-2); }
+.tabs { border-bottom: var(--bw) solid var(--edge); }
+.tabs button { font-weight: 700; color: var(--ink-2); }
+.tabs button.on { color: var(--ink); background: var(--gold); border-color: var(--edge); border-radius: 10px 10px 0 0; }
+.tl::before { border: var(--bw) solid var(--edge); box-shadow: none; }
+.timeline::before { background: var(--edge); width: 3px; }
+.brandcard:nth-child(1) { background: var(--blue-soft); }
+.brandcard:nth-child(2) { background: var(--pink); }
+.brandcard:nth-child(3) { background: var(--green-soft); }
+
+/* ---------- Formalar ---------- */
+.input { border: var(--bw) solid var(--edge); border-radius: 12px; }
+.input:focus { border-color: var(--edge); box-shadow: 4px 4px 0 var(--blue-2); }
+.seg { border: var(--bw) solid var(--edge); background: var(--paper-2); }
+.seg button.on { background: var(--gold); color: #0A0A0A; box-shadow: none; border: 2px solid var(--edge); }
+
+/* ---------- Oynalar ---------- */
+.modal__box, .sheet__box { border: var(--bw) solid var(--edge); box-shadow: 10px 10px 0 var(--sh); }
+.modal__back, .sheet__back { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(10,10,10,.55); }
+.toast { border: var(--bw) solid var(--gold); box-shadow: 4px 4px 0 var(--gold); }
+.sheet__h, .sheet__f { border-color: var(--edge); border-width: var(--bw); }
+.sheet__h { background: var(--gold); }
+.sheet__h h2, .sheet__h .eyebrow { color: #0A0A0A; }
+.editbar { border: var(--bw) solid var(--edge); background: var(--gold); box-shadow: var(--shadow-sm); }
+.editbar__l { color: #0A0A0A; }
+.ebtn { border: 2.5px solid var(--edge); box-shadow: 2px 2px 0 var(--sh); font-weight: 700; }
+.ebtn:hover { background: var(--ink); color: var(--gold); }
+.ib, .tb__b { border: 2px solid var(--edge); }
+.lst__n { border: 2px solid var(--edge); background: var(--gold-soft); }
+.imgprev { border: 2px solid var(--edge); }
+
+/* ---------- Infografika ichida ---------- */
+.flow__s.hl, .ladder__r.now { background: var(--gold); }
+.funnel__bar { background: var(--blue-soft); }
+.funnel__bar b { color: var(--ink); }
+.thermo__track { border: 2px solid var(--edge); }
+.sae__part { border: var(--bw) solid var(--edge); box-shadow: var(--shadow-sm); }
+.sae__part.on { background: var(--gold); border-color: var(--edge); }
+.ig__t { color: var(--ink); }
+.mx__ic { border: 2px solid var(--edge); background: var(--gold-soft); }
+
+/* ---------- Pastki qism ---------- */
+.footer { border-top: var(--bw) solid var(--edge); color: var(--ink-2); }
+
+@media (max-width: 640px) {
+  :root { --shadow: 4px 4px 0 var(--sh); --shadow-lg: 6px 6px 0 var(--sh); }
+  .btn { white-space: normal; text-align: center; height: auto; padding-top: 10px; padding-bottom: 10px; max-width: 100%; }
+  .hero__meta { gap: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn, .opt, a.mod, a.les, .prod, .rec, .cmscard { transition: none; }
+}
