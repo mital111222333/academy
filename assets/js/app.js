@@ -462,11 +462,19 @@
   /* =========================================================
      KATALOG + MOY TANLASH
      ========================================================= */
+  window.addEventListener("message", function (e) {
+    var d = e.data; if (!d || !d.evCourse) return;
+    if (e.origin !== location.origin && location.protocol !== "file:") return;
+    var f = document.getElementById("evFrame"); if (!f) return;
+    f.style.height = Math.max(600, d.h) + "px";
+    if (d.nav) { var top = f.getBoundingClientRect().top + window.pageYOffset - 90; if (window.pageYOffset > top) window.scrollTo({ top: top, behavior: "smooth" }); }
+  });
   var catState = { cat: "", brand: "", q: "" };
-  on(/^\/katalog(?:\/(tanlash))?$/, function (tab) {
-    var isPicker = tab === "tanlash";
-    var head = '<div class="sechead"><span class="eyebrow">Kutubxona</span><h1 class="display h2">' + (isPicker ? "Moy tanlash" : "Mahsulotlar katalogi") + '</h1><p class="lead">' + (isPicker ? "3 ta savolga javob bering — mos mahsulotlarni ko‘rsatamiz. Yakuniy qaror har doim mashina qo‘llanmasidagi talab asosida." : "Xususiyatlar, standartlar, kimga mos va mijozga nima deyish kerak. Narxlar — joriy prays-listda.") + '</p></div>' + (isPicker ? '' : editBar(eb("product-new", "+ Yangi mahsulot") + eb("catalog-meta", "🏷 Brendlar va toifalar"))) +
-      '<div class="tabs"><button type="button" class="' + (!isPicker ? "on" : "") + '" data-go="#/katalog">Katalog</button><button type="button" class="' + (isPicker ? "on" : "") + '" data-go="#/katalog/tanlash">Moy tanlash vositasi</button></div>';
+  on(/^\/katalog(?:\/(tanlash|ev))?$/, function (tab) {
+    var isPicker = tab === "tanlash", isEv = tab === "ev";
+    var head = '<div class="sechead"><span class="eyebrow">Kutubxona</span><h1 class="display h2">' + (isEv ? "Elektromobil reduktorlari uchun moylar" : isPicker ? "Moy tanlash" : "Mahsulotlar katalogi") + '</h1><p class="lead">' + (isEv ? "Kurs: 11 dars, yakuniy test va har bir reduktor uchun moy tanlash jadvali. Elektromobil va gibrid reduktorlariga moyni xossalari boʻyicha tanlashni oʻrganing." : isPicker ? "3 ta savolga javob bering — mos mahsulotlarni ko‘rsatamiz. Yakuniy qaror har doim mashina qo‘llanmasidagi talab asosida." : "Xususiyatlar, standartlar, kimga mos va mijozga nima deyish kerak. Narxlar — joriy prays-listda.") + '</p></div>' + (isPicker || isEv ? '' : editBar(eb("product-new", "+ Yangi mahsulot") + eb("catalog-meta", "🏷 Brendlar va toifalar"))) +
+      '<div class="tabs"><button type="button" class="' + (!isPicker && !isEv ? "on" : "") + '" data-go="#/katalog">Katalog</button><button type="button" class="' + (isPicker ? "on" : "") + '" data-go="#/katalog/tanlash">Moy tanlash vositasi</button><button type="button" class="' + (isEv ? "on" : "") + '" data-go="#/katalog/ev">EV reduktor moylari</button></div>';
+    if (isEv) { $app.innerHTML = page(head + '<iframe id="evFrame" src="ev/index.html?theme=dark&v=1" title="Elektromobil reduktorlari uchun moylar kursi" style="width:100%;height:80vh;border:0;border-radius:16px;display:block;background:transparent"></iframe><p class="tiny" style="margin-top:10px"><a href="ev/index.html" target="_blank" rel="noopener">Kursni alohida oynada ochish →</a></p>') + footer(); bindTabs(); return; }
     if (isPicker) { $app.innerHTML = page(head + '<div class="grid g2" style="align-items:start"><div class="card picker" id="picker"></div><div><div class="eyebrow" style="margin-bottom:12px">Tavsiyalar</div><div class="picker__res" id="pickRes"><div class="empty">Savollarga javob bering</div></div></div></div>') + footer(); bindTabs(); drawPicker(); return; }
 
     $app.innerHTML = page(head +
